@@ -1,0 +1,10 @@
+
+Especificar tamanho da janela do plot a priori
+
+GNUPLOT MAIN FEATURES:
+
+set format x "%.1e"
+y(…)
+Void setFormat(unsigned nr_digits, bool exp_or_not=false)
+
+
