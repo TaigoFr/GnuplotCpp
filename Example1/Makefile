@@ -7,7 +7,7 @@
 ########## USER DEFINITIONS
 ##############################################################################################
 
-LIB_DIRS 	:= 	../Lib
+LIB_DIRS 	:= 	..
 				
 # USER_FLAGS  := -Wall -Wextra -std=c++11 -Wno-unused-parameter -Wno-unused-function -fopenmp -pthread
 USER_FLAGS  := -std=c++14 -Wno-unused-parameter -Wno-unused-function

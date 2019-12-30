@@ -52,6 +52,11 @@ void plot()
     .add(mat, "m2", false, "")
     .plot();
 
+    Graphics G2(true);
+    G2.setTitle("Test Graphics 2")
+    .add(mat.row(0), mat.row(1), mat.row(2), {}, "m1")
+    .plot();
+
     G.restart(true)
     .setXRange(-10, 10)
     .setTitle("Energy vs. Time for Sample Data")
