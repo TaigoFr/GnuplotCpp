@@ -1,5 +1,6 @@
 #include "Graphics.hpp"
 #include <cmath>
+#include <unistd.h>
 
 
 double func(double x)
@@ -32,9 +33,15 @@ void plot()
     .setLegendPosition(true, true)
     .add(mat.row(0), mat.row(1), mat.row(2), {}, "m1")
     .setLogScaleY()
-    .add(mat * 2, "m2", false, "orange", 3, true)
+    .plot();
+
+    usleep(2e6);
+
+    G.add(mat * 2, "m2", false, "orange", 3, true)
     // .add(mat * 2, "m2")
     .plot();
+
+    usleep(2e6);
 
     G.restart(true)
     .setXRange(-10, 10)
@@ -57,8 +64,8 @@ int main()
 {
     plot();
     for(unsigned i = 0; i < 100000; ++i)
-        for(unsigned j = 0; j < 50000; ++j)
-            i + j;
+        // for(unsigned j = 0; j < 50000; ++j)
+            // i + j;
 
     return 0;
 }

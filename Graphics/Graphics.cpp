@@ -44,7 +44,7 @@ Graphics& Graphics::write(const std::string& str)
 
 Graphics& Graphics::setWindowSize(unsigned width, unsigned height)
 {
-	*gp << "set term x11 size " << width << "," << height << "\n";
+	*gp << "set term x11 size " << width << "," << height << std::endl;
 	return *this;
 }
 
@@ -52,57 +52,57 @@ Graphics& Graphics::setWindowSize(unsigned width, unsigned height)
 Graphics& Graphics::setXRange(double min, double max)
 {
 	user_scaled = true;
-	*gp << "set xrange [" << min << ":" << max << "]\n";
+	*gp << "set xrange [" << min << ":" << max << "]" << std::endl;
 	return *this;
 }
 
 Graphics& Graphics::setYRange(double min, double max)
 {
 	user_scaled = true;
-	*gp << "set yrange [" << min << ":" << max << "]\n";
+	*gp << "set yrange [" << min << ":" << max << "]" << std::endl;
 	return *this;
 }
 
 Graphics& Graphics::setAutoscale()
 {
 	user_scaled = true;
-	*gp << "set autoscale xy\n";
+	*gp << "set autoscale xy" << std::endl;
 	return *this;
 }
 
 Graphics& Graphics::setXLabel(const std::string& label)
 {
 	*gp << "set xlabel '" << label << "' font '" << text_font << "," << text_size
-	    << "' offset " << text_offset_x << "," << text_offset_y << "\n";
+	    << "' offset " << text_offset_x << "," << text_offset_y << std::endl;
 	return *this;
 }
 
 Graphics& Graphics::setYLabel(const std::string& label)
 {
 	*gp << "set ylabel '" << label << "' font '" << text_font << "," << text_size
-	    << "' offset " << text_offset_x << "," << text_offset_y << "\n";
+	    << "' offset " << text_offset_x << "," << text_offset_y << std::endl;
 	return *this;
 }
 
 Graphics& Graphics::setXTics(unsigned n)
 {
-	*gp << "set mxtics " << n << "\n";
+	*gp << "set mxtics " << n << std::endl;
 	return *this;
 }
 Graphics& Graphics::setYTics(unsigned n)
 {
-	*gp << "set mytics " << n << "\n";
+	*gp << "set mytics " << n << std::endl;
 	return *this;
 }
 
 Graphics& Graphics::setXInterval(float interval)
 {
-	*gp << "set xtics " << interval << "\n";
+	*gp << "set xtics " << interval << std::endl;
 	return *this;
 }
 Graphics& Graphics::setYInterval(float interval)
 {
-	*gp << "set ytics " << interval << "\n";
+	*gp << "set ytics " << interval << std::endl;
 	return *this;
 }
 
@@ -111,14 +111,14 @@ Graphics& Graphics::setGrid(bool x, bool y, const std::string& color)
 	assert(x || y);
 
 	*gp << "set grid " << (x ? "xtics " : "") << (y ? "ytics " : "") << "lt 0 lw 1 lc rgb '" << color <<
-	    "'\n";
+	    "'" << std::endl;
 	return *this;
 }
 
 Graphics& Graphics::setTitle(const std::string& title)
 {
 	*gp << "set title '" << title << "' font '" << text_font << "," << text_size
-	    << "' offset " << text_offset_x << "," << text_offset_y << "\n";
+	    << "' offset " << text_offset_x << "," << text_offset_y << std::endl;
 	return *this;
 }
 
@@ -143,53 +143,53 @@ Graphics& Graphics::setTextSize(unsigned size)
 
 Graphics& Graphics::setLogScaleX()
 {
-	*gp << "set logscale x\n";
+	*gp << "set logscale x" << std::endl;
 	return *this;
 }
 Graphics& Graphics::setLogScaleY()
 {
-	*gp << "set logscale y\n";
+	*gp << "set logscale y" << std::endl;
 	return *this;
 }
 
 Graphics& Graphics::setBMargin(float margin)
 {
-	*gp << "set bmargin " << margin << "\n";
+	*gp << "set bmargin " << margin << std::endl;
 	return *this;
 }
 Graphics& Graphics::setUMargin(float margin)
 {
-	*gp << "set umargin " << margin << "\n";
+	*gp << "set umargin " << margin << std::endl;
 	return *this;
 }
 Graphics& Graphics::setLMargin(float margin)
 {
-	*gp << "set lmargin " << margin << "\n";
+	*gp << "set lmargin " << margin << std::endl;
 	return *this;
 }
 Graphics& Graphics::setRMargin(float margin)
 {
-	*gp << "set rmargin " << margin << "\n";
+	*gp << "set rmargin " << margin << std::endl;
 	return *this;
 }
 
 Graphics& Graphics::setLegend()
 {
-	*gp << "set key font '" << text_font << "," << text_size << "'\n";
-	*gp << "set xtics font '" << text_font << "," << text_size << "'\n";
-	*gp << "set ytics font '" << text_font << "," << text_size << "'\n";
+	*gp << "set key font '" << text_font << "," << text_size << "'" << std::endl;
+	*gp << "set xtics font '" << text_font << "," << text_size << "'" << std::endl;
+	*gp << "set ytics font '" << text_font << "," << text_size << "'" << std::endl;
 	return *this;
 }
 
 Graphics& Graphics::setLegendPosition(bool left, bool bottom)
 {
-	*gp << "set key " << (left ? "left" : "right") << " " << (bottom ? "bottom" : "top") << "\n";
+	*gp << "set key " << (left ? "left" : "right") << " " << (bottom ? "bottom" : "top") << std::endl;
 	return *this;
 }
 
 Graphics& Graphics::plot()
 {
-	*gp << "\n";
+	*gp << std::endl;
 	return *this;
 }
 
@@ -251,10 +251,10 @@ Graphics& Graphics::add(const std::string& function,
 
 	std::stringstream ss;
 	ss << "f" << add_count << "(" << var << ")";
-	*gp << ss.str() << " = " << function << "\n";
+	*gp << ss.str() << " = " << function << std::endl;
 
 	if (Npoints > 0)
-		*gp << "set samples " << Npoints << "\n";
+		*gp << "set samples " << Npoints << std::endl;
 
 	std::string plot = (add_count > 0 ? "replot " : "plot ");
 	*gp << plot << ss.str();
@@ -295,7 +295,7 @@ Graphics& Graphics::post_add(bool ex, bool ey, const std::string& legend, const 
 		leg = ss.str();
 	}
 
-	*gp	<< " title '" << leg << "'\n";
+	*gp	<< " title '" << leg << "'" << std::endl;
 
 	++add_count;
 	return *this;
