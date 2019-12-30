@@ -26,7 +26,7 @@ void plot()
         x += step;
     }
 
-    Graphics G(true);
+    Graphics G;
 
     G.setTextSize(10)
     .setTitle("Random plot with Sample Data x^2_{fancy code}")
@@ -43,7 +43,12 @@ void plot()
 
     usleep(2e6);
 
-    G.restart(true)
+    Graphics G2;
+    G2.setTitle("Test Graphics 2")
+    .add(mat.row(0), mat.row(1), mat.row(2), {}, "m1")
+    .plot();
+
+    G.restart()
     .setXRange(-10, 10)
     .setTitle("Energy vs. Time for Sample Data")
     .setYTics(4)
@@ -52,12 +57,9 @@ void plot()
     .add(mat, "m2", false, "")
     .plot();
 
-    Graphics G2(true);
-    G2.setTitle("Test Graphics 2")
-    .add(mat.row(0), mat.row(1), mat.row(2), {}, "m1")
-    .plot();
+    usleep(2e6);
 
-    G.restart(true)
+    G.restart(false)
     .setXRange(-10, 10)
     .setTitle("Energy vs. Time for Sample Data")
     .add("stats_AH1.out", 1, 2)

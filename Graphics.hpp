@@ -11,7 +11,7 @@ public:
 	~Graphics();
 
 	Graphics& plot();
-	Graphics& restart(bool persist = true);
+	Graphics& restart(bool newWindow = true, bool persist = true);
 
 	// 'setWindowSize' not working: when window size is set, font sizes go all
 	// to default in CSD3, version 4.6 of gnuplot didn't have that problem

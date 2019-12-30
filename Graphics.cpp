@@ -3,7 +3,7 @@
 
 Graphics::Graphics(bool persist): gp(nullptr)
 {
-	restart(persist);
+	restart(true, persist);
 }
 Graphics::~Graphics()
 {
@@ -18,8 +18,14 @@ void Graphics::clear()
 	}
 }
 
-Graphics& Graphics::restart(bool persist)
+Graphics& Graphics::restart(bool newWindow, bool persist)
 {
+	if(!newWindow)
+	{
+		add_count = 0;
+		return *this;
+	}
+
 	clear();
 
 	if (gp == nullptr) {
