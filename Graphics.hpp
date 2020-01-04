@@ -46,7 +46,8 @@ public:
 	              const std::string& legend = "",
 	              const std::string& color = "",
 	              unsigned size = 0,
-	              bool if_lines_also_points = false);
+	              bool if_lines_also_points = false,
+	              bool use_x_errors_not_asymetric_y = true);
 
 	Graphics& add(const std::string& function,
 	              const std::string& legend = "",
@@ -57,10 +58,10 @@ public:
 
 	Graphics& add(const std::vector<std::vector<double>>& data,
 	              const std::string& legend = "",
-	              bool if_one_error_use_x = false,
 	              const std::string& color = "",
 	              unsigned size = 0,
-	              bool if_lines_also_points = false);
+	              bool if_lines_also_points = false,
+	              bool use_x_errors_not_asymetric_y = true);
 
 	Graphics& add(const std::vector<double>& data_x,
 	              const std::vector<double>& data_y,
@@ -69,14 +70,15 @@ public:
 	              const std::string& legend = "",
 	              const std::string& color = "",
 	              unsigned size = 0,
-	              bool if_lines_also_points = false);
+	              bool if_lines_also_points = false,
+	              bool use_x_errors_not_asymetric_y = true);
 
 	Graphics& add(const Eigen::MatrixXd& data,
 	              const std::string& legend = "",
-	              bool onlyXerrors = false,
 	              const std::string& color = "",
 	              unsigned size = 0,
-	              bool if_lines_also_points = false);
+	              bool if_lines_also_points = false,
+	              bool use_x_errors_not_asymetric_y = true);
 	Graphics& add(const Eigen::VectorXd& data_x,
 	              const Eigen::VectorXd& data_y,
 	              const Eigen::VectorXd& data_ex,
@@ -84,7 +86,8 @@ public:
 	              const std::string& legend = "",
 	              const std::string& color = "",
 	              unsigned size = 0,
-	              bool if_lines_also_points = false);
+	              bool if_lines_also_points = false,
+	              bool use_x_errors_not_asymetric_y = true);
 
 	// write raw to GNUPLOT
 	Graphics& write(const std::string& str);

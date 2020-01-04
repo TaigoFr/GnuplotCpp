@@ -21,8 +21,8 @@ void plot()
     {
         mat(0, i) = x;
         mat(1, i) = func(x);
-        mat(2, i) = 0.05;
-        mat(3, i) = 0.2;
+        mat(2, i) = 0.5;
+        mat(3, i) = 2.0;
         x += step;
     }
 
@@ -37,7 +37,7 @@ void plot()
 
     usleep(2e6);
 
-    G.add(mat * 2, "m2", false, "orange", 3, true)
+    G.add(mat * 2, "m2", "orange", 3, true)
     // .add(mat * 2, "m2")
     .plot();
 
@@ -45,7 +45,10 @@ void plot()
 
     Graphics G2;
     G2.setTitle("Test Graphics 2")
-    .add(mat.row(0), mat.row(1), mat.row(2), {}, "m1")
+    // .setXRange(-2,6)
+    // .add("data.out",1,2,3,4, "m1","",0,false,false)
+    // .add(mat,"mat","",0,false)
+    .add(mat,"mat","",0,false,false)
     .plot();
 
     G.restart()
@@ -54,7 +57,7 @@ void plot()
     .setYTics(4)
     .setYInterval(10)
     .setGrid(true, true)
-    .add(mat, "m2", false, "")
+    .add(mat, "m2")
     .plot();
 
     usleep(2e6);
@@ -70,7 +73,7 @@ void plot()
 int main()
 {
     plot();
-    for(unsigned i = 0; i < 100000; ++i)
+    // for(unsigned i = 0; i < 100000; ++i)
         // for(unsigned j = 0; j < 50000; ++j)
             // i + j;
 

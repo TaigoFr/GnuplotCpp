@@ -20,8 +20,7 @@ void Graphics::clear()
 
 Graphics& Graphics::restart(bool newWindow, bool persist)
 {
-	if(!newWindow)
-	{
+	if (!newWindow) {
 		add_count = 0;
 		return *this;
 	}
@@ -205,7 +204,8 @@ Graphics& Graphics::add(const std::string file_path, unsigned col_x, unsigned co
                         const std::string& legend,
                         const std::string& color,
                         unsigned size,
-                        bool if_lines_also_points)
+                        bool if_lines_also_points,
+                        bool use_x_errors_not_asymetric_y)
 {
 	if (!user_scaled)
 		setAutoscale();
@@ -213,19 +213,32 @@ Graphics& Graphics::add(const std::string file_path, unsigned col_x, unsigned co
 	std::string plot = (add_count > 0 ? "replot " : "plot ");
 	*gp << plot << "'" <<  file_path << "' u " << col_x << ":" << col_y;
 
-	if (col_ex > 0)
-		*gp << ":" << col_ex;
+	bool ex = use_x_errors_not_asymetric_y && col_ex > 0;
+	bool ey = col_ey > 0;
 
-	if (col_ey > 0)
-		*gp << ":" << col_ey;
+	if (col_ex > 0) {
+		if (ex)
+			*gp << ":" << col_ex;
+		else
+			*gp << ":($" << col_y << "-" << "$" << col_ex << ")";
+	}
 
-	return post_add(col_ex > 0, col_ey > 0, legend, color, size, if_lines_also_points);
+	if (col_ey > 0) {
+		if (ex)
+			*gp << ":" << col_ey;
+		else
+			*gp << ":($" << col_y << "+" << "$" << col_ey << ")";
+	}
+
+
+	return post_add(ex, ey, legend, color, size, if_lines_also_points);
 }
 
 Graphics& Graphics::add(const std::vector<std::vector<double>>& data, const std::string& legend,
-                        bool if_one_error_use_x, const std::string& color,
+                        const std::string& color,
                         unsigned size,
-                        bool if_lines_also_points)
+                        bool if_lines_also_points,
+                        bool use_x_errors_not_asymetric_y)
 {
 	if (!user_scaled)
 		setAutoscale();
@@ -235,11 +248,26 @@ Graphics& Graphics::add(const std::vector<std::vector<double>>& data, const std:
 		return *this;
 	}
 
-	std::string plot = (add_count > 0 ? "replot " : "plot ");
-	*gp << plot << gp->binFile1d(data, "record");
+	bool ex = use_x_errors_not_asymetric_y && data[0].size() == 4;
+	bool ey = data[0].size() >= 3;
 
-	bool ex = (data[0].size() == 3 && if_one_error_use_x  || data[0].size() == 4);
-	bool ey = (data[0].size() == 3 && !if_one_error_use_x || data[0].size() == 4);
+	std::string plot = (add_count > 0 ? "replot " : "plot ");
+
+	if (!use_x_errors_not_asymetric_y && data[0].size() == 4) {
+		auto data2 = data;
+
+		for (int i = 0; i < data.size(); ++i) {
+			data2[i][2] = data[i][1] - data[i][2]; // y- = y - ey-
+			data2[i][3] = data[i][1] + data[i][3]; // y+ = y + ey+
+		}
+
+		// *gp << plot << gp->binFile1d(data2, "record");
+		*gp << plot << gp->file1d(data2);
+	}
+	else
+		// *gp << plot << gp->binFile1d(data, "record");
+		*gp << plot << gp->file1d(data);
+
 
 	return post_add(ex, ey, legend, color, size, if_lines_also_points);
 }
@@ -278,14 +306,14 @@ Graphics& Graphics::post_add(bool ex, bool ey, const std::string& legend, const 
 		if (size == 0)
 			*gp << "w p";
 
-		*gp << " pt 7 ps 1 ";
+		*gp << " pt 7 ps 0.5 ";
 	}
 
 	if (ex && size == 0) {
 		if (ey)
 			*gp << " with xyerrorbars ";
 		else
-			*gp << " with yerrorbars ";
+			*gp << " with xerrorbars ";
 	}
 	else if (ey && size == 0)
 		*gp << " with yerrorbars ";
@@ -293,15 +321,23 @@ Graphics& Graphics::post_add(bool ex, bool ey, const std::string& legend, const 
 	if (color != "")
 		*gp << " lc rgb '" << color << "'";
 
-	auto leg = legend;
+	/*
+		auto leg = legend;
 
-	if (leg == "") {
-		std::stringstream ss;
-		ss << "F" << add_count;
-		leg = ss.str();
-	}
+		if (leg == "") {
+			std::stringstream ss;
+			ss << "F" << add_count;
+			leg = ss.str();
+		}
 
-	*gp	<< " title '" << leg << "'" << std::endl;
+		*gp	<< " title '" << leg << "'" << std::endl;
+	*/
+	if (legend == "")
+		*gp << " notitle ";
+	else
+		*gp << " title '" << legend << "' ";
+
+	*gp << std::endl;
 
 	++add_count;
 	return *this;
@@ -313,47 +349,55 @@ Graphics& Graphics::add(const std::vector<double>& data_x, const std::vector<dou
                         const std::string& legend,
                         const std::string& color,
                         unsigned size,
-                        bool if_lines_also_points)
+                        bool if_lines_also_points,
+                        bool use_x_errors_not_asymetric_y)
 {
 	bool has_ex = (data_ex.size() > 0);
 	bool has_ey = (data_ey.size() > 0);
 
 	assert(data_x.size() == data_y.size() &&
-		(!has_ex || data_ex.size() == data_x.size()) &&
-		(!has_ey || data_ey.size() == data_y.size())
-		);
+	       (!has_ex || data_ex.size() == data_x.size()) &&
+	       (!has_ey || data_ey.size() == data_y.size())
+	      );
 
 	// make transposed "matrix"
-	std::vector<std::vector<double>> data(data_x.size(), std::vector<double>(2 + has_ex + has_ey));
-	for(int i=0; i<data.size(); ++i)
-	{
+	std::vector<std::vector<double>> data(data_x.size(), std::vector<double>(2 + has_ex + 1));
+
+	for (int i = 0; i < data.size(); ++i) {
 		data[i][0] = data_x[i];
 		data[i][1] = data_y[i];
+
 		if (has_ex)
 			data[i][2] = data_ex[i];
+
 		if (has_ey)
 			data[i][2 + has_ex] = data_ey[i];
+		else
+			data[i][2 + has_ex] = 0;
 	}
 
-	return add(data, legend, has_ex, color, size, if_lines_also_points);
+	return add(data, legend, color, size, if_lines_also_points, use_x_errors_not_asymetric_y);
 }
-Graphics& Graphics::add(const Eigen::MatrixXd& data, const std::string& legend, bool onlyXerrors,
+Graphics& Graphics::add(const Eigen::MatrixXd& data, const std::string& legend,
                         const std::string& color,
                         unsigned size,
-                        bool if_lines_also_points)
+                        bool if_lines_also_points,
+                        bool use_x_errors_not_asymetric_y)
 {
-	return add(EigenMatrixToSTDVector(data), legend, onlyXerrors, color, size, if_lines_also_points);
+	return add(EigenMatrixToSTDVector(data), legend, color, size, if_lines_also_points,
+	           use_x_errors_not_asymetric_y);
 }
 Graphics& Graphics::add(const Eigen::VectorXd& data_x, const Eigen::VectorXd& data_y,
                         const Eigen::VectorXd& data_ex, const Eigen::VectorXd& data_ey,
                         const std::string& legend,
                         const std::string& color,
                         unsigned size,
-                        bool if_lines_also_points)
+                        bool if_lines_also_points,
+                        bool use_x_errors_not_asymetric_y)
 {
 	return add(EigenVectorToSTDVector(data_x), EigenVectorToSTDVector(data_y),
 	           EigenVectorToSTDVector(data_ex), EigenVectorToSTDVector(data_ey),
-	           legend, color, size, if_lines_also_points);
+	           legend, color, size, if_lines_also_points, use_x_errors_not_asymetric_y);
 }
 
 std::vector<std::vector<double>> Graphics::EigenMatrixToSTDVector(const Eigen::MatrixXd mat)
