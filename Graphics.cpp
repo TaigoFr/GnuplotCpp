@@ -35,15 +35,18 @@ Graphics& Graphics::restart(bool newWindow, bool persist)
 		text_offset_y = 0;
 		text_font = "Verdana";
 		text_size = 14;
+		plottingTo2ndAxis = false;
 		setLegend();
 	}
 
 	return *this;
 }
 
-Graphics& Graphics::write(const std::string& str)
+Graphics& Graphics::write(const std::string& str, bool newLine)
 {
 	*gp << str;
+	if(newLine)
+		*gp << std::endl;
 	return *this;
 }
 
@@ -64,7 +67,10 @@ Graphics& Graphics::setXRange(double min, double max)
 Graphics& Graphics::setYRange(double min, double max)
 {
 	user_scaled = true;
-	*gp << "set yrange [" << min << ":" << max << "]" << std::endl;
+
+	*gp << "set y" << (plottingTo2ndAxis ? "2" : "") << "range [" << min << ":" << max << "]" <<
+	    std::endl;
+
 	return *this;
 }
 
@@ -84,7 +90,9 @@ Graphics& Graphics::setXLabel(const std::string& label)
 
 Graphics& Graphics::setYLabel(const std::string& label)
 {
-	*gp << "set ylabel '" << label << "' font '" << text_font << "," << text_size
+	*gp << "set y" << (plottingTo2ndAxis ? "2" : "") << "label '" << label << "' font '" << text_font <<
+	    "," <<
+	    text_size
 	    << "' offset " << text_offset_x << "," << text_offset_y << std::endl;
 	return *this;
 }
@@ -96,7 +104,7 @@ Graphics& Graphics::setXTics(unsigned n)
 }
 Graphics& Graphics::setYTics(unsigned n)
 {
-	*gp << "set mytics " << n << std::endl;
+	*gp << "set my" << (plottingTo2ndAxis ? "2" : "") << "tics " << n << std::endl;
 	return *this;
 }
 
@@ -107,7 +115,7 @@ Graphics& Graphics::setXInterval(float interval)
 }
 Graphics& Graphics::setYInterval(float interval)
 {
-	*gp << "set ytics " << interval << std::endl;
+	*gp << "set y" << (plottingTo2ndAxis ? "2" : "") << "tics " << interval << std::endl;
 	return *this;
 }
 
@@ -153,7 +161,7 @@ Graphics& Graphics::setLogScaleX()
 }
 Graphics& Graphics::setLogScaleY()
 {
-	*gp << "set logscale y" << std::endl;
+	*gp << "set logscale y" << (plottingTo2ndAxis ? "2" : "") << std::endl;
 	return *this;
 }
 
@@ -183,12 +191,28 @@ Graphics& Graphics::setLegend()
 	*gp << "set key font '" << text_font << "," << text_size << "'" << std::endl;
 	*gp << "set xtics font '" << text_font << "," << text_size << "'" << std::endl;
 	*gp << "set ytics font '" << text_font << "," << text_size << "'" << std::endl;
+	*gp << "set y2tics font '" << text_font << "," << text_size << "'" << std::endl; // do the 2nd as well just in case, it doesn't hurt
 	return *this;
 }
 
 Graphics& Graphics::setLegendPosition(bool left, bool bottom)
 {
 	*gp << "set key " << (left ? "left" : "right") << " " << (bottom ? "bottom" : "top") << std::endl;
+	return *this;
+}
+
+Graphics& Graphics::plotTo2ndAxis(bool yes, float ytics)
+{
+	plottingTo2ndAxis = yes;
+
+	if (!yes)
+		return *this;
+
+	if (ytics > 0) {
+		*gp << "set ytics nomirror" << std::endl;
+		*gp << "set y2tics " << ytics << std::endl;
+	}
+
 	return *this;
 }
 
@@ -336,6 +360,9 @@ Graphics& Graphics::post_add(bool ex, bool ey, const std::string& legend, const 
 		*gp << " notitle ";
 	else
 		*gp << " title '" << legend << "' ";
+
+	if (plottingTo2ndAxis)
+		*gp << " axis x1y2 ";
 
 	*gp << std::endl;
 

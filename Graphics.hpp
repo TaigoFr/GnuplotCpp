@@ -41,6 +41,8 @@ public:
 	Graphics& setTextFont(const std::string& font);
 	Graphics& setTextSize(unsigned size);
 
+	Graphics& plotTo2ndAxis(bool yes, float ytics = -1.f);
+
 	Graphics& add(const std::string file_path, unsigned col_x, unsigned col_y,
 	              int col_ex = -1, int col_ey = -1,
 	              const std::string& legend = "",
@@ -90,7 +92,7 @@ public:
 	              bool use_x_errors_not_asymetric_y = true);
 
 	// write raw to GNUPLOT
-	Graphics& write(const std::string& str);
+	Graphics& write(const std::string& str, bool newLine = true);
 
 private:
 	Gnuplot* gp;
@@ -101,6 +103,8 @@ private:
 	float text_offset_y;
 	std::string text_font;
 	unsigned text_size;
+
+	bool plottingTo2ndAxis;
 
 private:
 	// assumes 'mat' is organised by columns
